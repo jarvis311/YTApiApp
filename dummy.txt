@@ -1,0 +1,55 @@
+This is App.js file and this all code is write in class base components and also make state components base on the class Component.\
+Currenty App.js file is refactor in the Function base components.
+
+
+
+import React from 'react';
+import Youtube from './Apis/Youtube';
+import './App.css';
+import SearchBar from './components/SearchBar';
+import VidioDetails from './components/VidioDetails';
+import VidioList from './components/VidioList';
+
+class App extends React.Component {
+
+  state = { videos: [], selectedVideo: null }
+
+  onTermsumit = async (term) => {
+    const response = await Youtube.get('/search', {
+      params: {
+        q: term
+      }
+    });
+    this.setState({ videos: response.data.items, selectedVideo: response.data.items[0] });
+  }
+
+  onVideoSelecte = (video) => {
+    this.setState({selectedVideo: video});
+  }
+
+  componentDidMount() {
+    this.onTermsumit('new technology')
+  }
+  render() {
+    return (
+      <div className="App">
+        <h1 style={{textAlign:'center'}}>Search any video</h1>
+        <SearchBar onFormSubmit={this.onTermsumit} />
+        <div className='ui grid'>
+          <div className="ui row">
+            <div className='eleven wide column'>
+            <VidioDetails video={this.state.selectedVideo} />
+            </div>
+            <div className='five wide column'>
+            <VidioList onVideoSelect={this.onVideoSelecte} videos={this.state.videos} />
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    )
+  };
+}
+
+export default App;
